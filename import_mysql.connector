@@ -1,0 +1,114 @@
+import mysql.connector
+from mysql.connector import Error
+
+def create_connection():
+    """
+    Create a connection to MySQL database
+    """
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',          # Your MySQL host
+            user='root',               # Your MySQL username
+            password='your_password',  # Your MySQL password
+            database='garchi'      # Your database name
+        )
+        
+        if connection.is_connected():
+            db_info = connection.get_server_info()
+            print(f"Successfully connected to MySQL Server version {db_info}")
+        
+        return connection
+    
+    except Error as e:
+        print(f"Error while connecting to MySQL: {e}")
+        return None
+
+
+def create_table(connection):
+    """
+    Create a simple table in the database
+    """
+    try:
+        cursor = connection.cursor()
+        
+        create_resume_table_query = """
+        CREATE TABLE IF NOT EXISTS resume (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            full_name VARCHAR(255) NOT NULL,
+            age INT NOT NULL,
+            address VARCHAR(255) NOT NULL,
+            phone VARCHAR NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            job_title VARCHAR(255) NOT NULL,
+            professional_summary NVARCHAR   
+            
+        )
+        """
+    
+        create_experience_table_query = """
+        CREATE TABLE IF NOT EXISTS experience (
+            experience_id INT AUTO_INCREMENT PRIMARY KEY, 
+            job_title VARCHAR(255),
+            company VARCHAR(255),
+            years INT
+            
+
+            
+        )
+        """
+
+        create_education_table_query = """
+        CREATE TABLE IF NOT EXISTS education (
+            education_id INT AUTO_INCREMENT PRIMARY KEY,
+            degree VARCHAR(255),
+            instituition VARCHAR(255),
+            year INT
+        )
+        """
+
+        create_skills_table_query = """
+        CREATE TABLE IF NOT EXISTS skills (
+            skills_id INT AUTO_INCREMENT PRIMARY KEY,
+            skills enum
+        )
+        """
+        
+        cursor.execute(create_resume_table_query)
+        print("Table 'resume' created successfully")
+        cursor.execute(create_experience_table_query)
+        print("Table 'experience' created successfully")
+        cursor.execute(create_education_table_query)
+        print("Table 'education' created successfully")
+        cursor.execute(create_skills_table_query)
+        print("Table 'skills' created successfully")
+        connection.commit()
+        cursor.close()
+    
+    except Error as e:
+
+        print(f"Error creating table: {e}")
+
+
+def insert_data(connection, name, email, age, address, phone,job_title,professional_summmary):
+    """
+    Insert data into the users table
+    """
+    try:
+        cursor = connection.cursor()
+        
+        insert_query = "INSERT INTO users (name, email, age, address, phone,job_title,professional_summmary) VALUES (%s, %s, %s)"
+        user_data = (name, email, age, address, phone,job_title,professional_summmary)
+        
+        cursor.execute(insert_query, user_data)
+        connection.commit()
+        print(f"Record inserted successfully for {name}")
+        cursor.close()
+    
+    except Error as e:
+        print(f"Error inserting data: {e}")
+
+
+
+
+
+
